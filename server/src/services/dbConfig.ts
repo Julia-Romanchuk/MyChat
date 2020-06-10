@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const mongodbURL = "mongodb://127.0.0.1:27017" || process.env.mongodbURL
+const mongodbURL = process.env.mongodbURL || "mongodb://127.0.0.1:27017"
 
 mongoose.set('useCreateIndex', true)
 mongoose.connect(mongodbURL, {useNewUrlParser: true})

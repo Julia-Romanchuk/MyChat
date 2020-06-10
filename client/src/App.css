@@ -1,0 +1,22 @@
+@import '~antd/dist/antd.css';
+
+.login-form {
+  max-width: 550px;
+  margin: auto
+}
+.login-form-forgot {
+  float: right;
+}
+.ant-col-rtl .login-form-forgot {
+  float: right;
+}
+.login-form-button {
+  width: 100%;
+}
+
+.dialog {
+  position: relative;
+  overflow: scroll;
+  max-height: 550px;
+  scroll-snap-align: end
+}

@@ -4,9 +4,9 @@ import cloudinary from 'cloudinary'
 import multer from 'multer'
 
 cloudinary.v2.config({
-    cloud_name: 'jully',
-    api_key: 819578326313225,
-    api_secret: "rTbhbDja86sr-f8Z1scDqbal-bw"
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
 });
 
 const storage = cloudinaryStorage({
