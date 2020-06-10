@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier",
+    "tslint-config-standard"
+  ],
+  "rulesDirectory": [
+    "tslint-plugin-prettier"
+  ],
+  "defaultSeverity": "warning",
+  "rules": {
+    "prettier": true,
+    "ter-indent": false,
+    "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
+    "no-console": false
+  }
+}
