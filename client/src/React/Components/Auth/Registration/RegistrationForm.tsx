@@ -4,6 +4,7 @@ import { RegistFormData } from '../../../../Redux/Types/authReduser.type'
 import { validateEmail, validateUsername } from '../../../Validators/validator';
 import { ValidateStatus } from 'antd/es/form/FormItem';
 import InputsFormCreaator from '../../../common/formItemCreator';
+import { Store } from 'antd/es/form/interface';
 
 type RegistrationFormPropsType = {
     onRegistSubmit: (formData: RegistFormData) => void
@@ -26,7 +27,8 @@ const formItemLayout = {
       span: 16,
     },
   },
-};
+}
+
 const tailFormItemLayout = {
   wrapperCol: {
     xs: {
@@ -38,21 +40,21 @@ const tailFormItemLayout = {
       offset: 8,
     },
   },
-};
+}
+
 const RegistrationForm: FC<RegistrationFormPropsType> = ({onRegistSubmit}) => {
 
   const [emailValidateStatus, setEmailValidateStatus] = useState<ValidateStatus>('')
   const [usernameValidateStatus, setUsernameValidateStatus] = useState<ValidateStatus>('')
   
-  const onFinish = (formData: RegistFormData) => {
-        onRegistSubmit(formData)
+  const onFinish = (formData: Store) => {
+        onRegistSubmit(formData as RegistFormData)
     } 
 
     return <Form
       {...formItemLayout}
       className="login-form"
       name="register"
-      //@ts-ignore
       onFinish={onFinish}
     >
       <InputsFormCreaator
@@ -118,6 +120,7 @@ const RegistrationForm: FC<RegistrationFormPropsType> = ({onRegistSubmit}) => {
         ]}
         hasFeedback = 'all'
         required = {['confirm.password', 'password', "firstname", "lastname" ]} />
+      
       <Form.Item {...tailFormItemLayout}>
         <Button className="login-form-button" type="primary" htmlType="submit">
           Register

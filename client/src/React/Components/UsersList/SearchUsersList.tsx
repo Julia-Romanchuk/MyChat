@@ -9,7 +9,7 @@ import { withRouter, RouteComponentProps } from 'react-router'
 import { SearchUserItem } from '../../../Redux/Types/usersReduser.type'
 
 type MapStateType = {
-    usersList: Array<SearchUserItem>
+    usersList: Array<SearchUserItem> | null
 }
 type MapDispatchProps = {
     getUsers: (usernameParam: string) => void
@@ -34,10 +34,9 @@ const UsersList: FC<DialogContainerType> = ({usersList, getUsers, history}) => {
                     onClick={() => onUsersClick(userItem._id)}
                     children={`${userItem.firstname} ${userItem.lastname}`}
                 />
-                    
-
                 )
-            })}
+            })
+        }
     </Menu>
     : <p>No users found</p>
     

@@ -1,8 +1,8 @@
-import { MiddlewareAPI } from "redux"
-import { sendMessage, pushMessage } from "../Redusers/dialogsReducer"
-import { MessageItem } from "../Types/dilaogsReducer.type"
+import { MiddlewareAPI, AnyAction } from "redux"
+import { pushMessage } from "../Redusers/dialogsReducer"
+import { MessageItem, SendMessagePayload } from "../Types/dilaogsReducer.type"
 import { ServerResponse } from "../../API/api.type"
-import { message } from "antd"
+import { Dispatch } from "react"
 
 type WSConfig = {
     host: string
@@ -18,23 +18,23 @@ export const wsConnect = () => ({type: 'WS_CONNECT'} as const)
 const wsConnection = () => ({type: 'WS_CONNECTION'} as const)
 export const wsDisconnect = () => ({type: 'WS_DISCONNECT'} as const)
 const wsDisconnection = () => ({type: 'WS_DISCONNECTION'} as const)
-export const wsSendMessage = (messagePayload: {text: string, userId: string, dialogId?: string}) => (
+export const wsSendMessage = (messagePayload: SendMessagePayload) => ( 
     {type: 'SEND_MESSAGE', messagePayload} as const
 )
 export const deleteMessage = (messageId: string) => ({type: 'DELETE_MESSAGE', messageId})
 
 //ws events handlers
-const onClose = (store: MiddlewareAPI) => () => {
+const onClose = (store: MiddlewareAPI) => (e: CloseEvent) => {
     console.log('WS CLOSED')
     store.dispatch(wsDisconnection())
 }
-const onOpen = (store: MiddlewareAPI) => (event: any) => {
+const onOpen = (store: MiddlewareAPI) => (e: Event) => {
     console.log('WS OPENED')
     store.dispatch(wsConnection())
 }
 
 const onMessage = (store: MiddlewareAPI) => (event: MessageEvent) => {
-    const payload: ServerResponse<{dialogId: string, message: MessageItem }> = JSON.parse(event.data)
+    const payload: ServerResponse<{dialogId: string, message: MessageItem}> = JSON.parse(event.data)
     payload.status
     ? store.dispatch(pushMessage(payload.data.message))
     : alert(payload.message)
@@ -43,7 +43,7 @@ const onMessage = (store: MiddlewareAPI) => (event: MessageEvent) => {
 const WebSocketMiddleware = (config: WSConfig) => {
     let socket: null | WebSocket = null
 
-    return (store: MiddlewareAPI) => (next: any) => (action: WSAction) => {
+    return (store: MiddlewareAPI) => (next: Dispatch<AnyAction>) => (action: WSAction) => {
         switch (action.type) {
             case 'WS_CONNECT':
                 if (socket !== null) socket.close()

@@ -1,36 +1,21 @@
-import { Reducer, Dispatch } from "react"
 import authAPI from "../../API/authAPI"
 import dialogsAPI from '../../API/dialodsAPI' 
-import { StatusCode } from "../../API/api.type"
 import {  
-    InitialStateType,
     ResultType, 
     RegistFormData, 
     LoginFormData
 } from "../Types/authReduser.type"
+import { ThunkBase, Reducer } from "../Types/common.type"
 
-type CombineActions = 
-    ReturnType<typeof registrationResult> |
-    ReturnType<typeof loginResult> | 
-    ReturnType<typeof isAuth> |
-    ReturnType<typeof setOwnerId> |
-    ReturnType<typeof isFeaching>    
-
-const initialState: InitialStateType = {
-    registrationResult: {
-        status: null,
-        message: ''
-    },
-    loginResult: {
-        status: null,
-        message: ''
-    },
+const initialState: InitialState = {
+    registrationResult: null,
+    loginResult: null,
     isAuthorized: false,
-    ownerId: null,
+    ownerId: '',
     feachingInProgress: false
 }
 
-const authReduser: Reducer<InitialStateType, CombineActions> = (state = initialState, action) => {
+const authReduser = (state: InitialState = initialState, action: CombineActions): InitialState => {
     switch (action.type) {
         case 'REGISTRATION_RESULT': 
             return {...state, registrationResult: action.result}
@@ -43,7 +28,7 @@ const authReduser: Reducer<InitialStateType, CombineActions> = (state = initialS
         case 'IS_FEACHING':
             return {...state, feachingInProgress: action.isFeaching}
         default: 
-            return state 
+            return state
     }
 }
 
@@ -53,12 +38,12 @@ export const isAuth = (isAuth: boolean) => ({type: 'IS_AUTH', isAuth} as const)
 export const setOwnerId = (ownerId: string) => ({type: 'SET_OWNER_ID', ownerId} as const)
 export const isFeaching = (isFeaching: boolean) => ({type: 'IS_FEACHING', isFeaching} as const)
 
-export const onRegistSubmit = (formData: RegistFormData) => async (dispatch: Dispatch<CombineActions>) => {
+export const onRegistSubmit = (formData: RegistFormData): Thunk => async (dispatch) => {
     const response = await authAPI.registration(formData)
     dispatch(registrationResult(response))
 }
 
-export const onLogin = (formData: LoginFormData) => async (dispatch: Dispatch<any>) => {
+export const onLogin = (formData: LoginFormData): Thunk => async (dispatch) => {
     const response = await authAPI.login(formData)
     if (response.status) {
         dispatch(authMe())
@@ -67,7 +52,7 @@ export const onLogin = (formData: LoginFormData) => async (dispatch: Dispatch<an
     }
 }
 
-export const authMe = () => async (dispatch: Dispatch<CombineActions>) => {
+export const authMe = (): Thunk => async (dispatch) => {
     dispatch(isFeaching(true))
     const response = await authAPI.authMe()
     if (response.status) {
@@ -79,3 +64,20 @@ export const authMe = () => async (dispatch: Dispatch<CombineActions>) => {
 }
 
 export default authReduser
+
+type CombineActions = 
+    ReturnType<typeof registrationResult> |
+    ReturnType<typeof loginResult> | 
+    ReturnType<typeof isAuth> |
+    ReturnType<typeof setOwnerId> |
+    ReturnType<typeof isFeaching>    
+
+type InitialState = {
+    registrationResult: null | ResultType,
+    loginResult: null | ResultType,
+    isAuthorized: boolean,
+    ownerId: string,
+    feachingInProgress: boolean
+}
+
+type Thunk = ThunkBase<CombineActions>

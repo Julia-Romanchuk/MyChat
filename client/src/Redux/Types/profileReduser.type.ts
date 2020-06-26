@@ -5,6 +5,12 @@ export type UserItem = {
     _id: string
 }
 
+export type Contacts = {
+    mobile?: number
+    email: string
+    website?: string
+}
+
 export type ProfileType = {
     _id: string
     username: string
@@ -14,11 +20,7 @@ export type ProfileType = {
     birthDate?: Date
     aboutMe?: string
     image?: string
-    contacts: {
-        mobile?: number
-        email: string
-        website?: string
-    }
+    contacts: Contacts
     address?: {
         country: string
         city: string
@@ -28,13 +30,3 @@ export type ProfileType = {
     followed: boolean 
     dialogId: string | undefined
 }
-type ResultType = {
-    status: null | number
-    message: string
-}
-
-export type InitialStateType = {
-    profile: any //ProfileType | null
-    isFollowed: boolean
-    friendsList: Array<UserItem> | null
-} 

@@ -1,14 +1,6 @@
 export type ResultType = {
-    status: null | number
+    status: number
     message: string
-}
-
-export type InitialStateType = {
-    registrationResult: ResultType
-    loginResult: ResultType
-    isAuthorized: boolean
-    ownerId: string | null
-    feachingInProgress: boolean
 }
 
 export type RegistFormData = {

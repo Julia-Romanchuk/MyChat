@@ -1,22 +1,20 @@
-import React, { PropsWithChildren } from 'react'
+import React, { FC } from 'react'
 import { Spin } from 'antd'
 import { AppStateType } from '../../Redux'
 import { isFechingSelector } from '../Selectors/loginSelectors'
 import { connect } from 'react-redux'
 
-type PerloaderType = {
-    isFeaching: boolean
-    children: any
-}
-
 type MapStateProps = {
     isFeaching: boolean
 }
 
-const Preloader = (props: PropsWithChildren<PerloaderType>) => {
-    return props.isFeaching
+const Preloader: FC<MapStateProps> = (props) => {
+
+    const {isFeaching, children} = props
+
+    return isFeaching
     ? <Spin size='large' />
-    : props.children
+    : <> { children } </>
 } 
 
 const mapStateToProps = (state: AppStateType) => ({

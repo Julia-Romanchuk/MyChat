@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 import { Empty } from 'antd'
 import { List } from 'antd'
+
 import { Dialog } from '../../../../Redux/Types/dilaogsReducer.type'
 import { getTimeHHMMSS } from '../../../Helpers/dateWorker'
 
@@ -28,15 +29,20 @@ const Messages: FC<MessagesType> = (props) => {
                 <div style={!isOwner  
                     ? {wordBreak: 'break-word', backgroundColor: 'rgb(210, 230, 247)', ...defauldMessage} 
                     : {...defauldMessage, background: 'white', wordBreak: 'break-word'}} >
-                    {message.text} <span style = {{paddingLeft: '15px', fontSize: '0.75em'}}>{getTimeHHMMSS(message.createdAt)}</span>
+                    {message.text} 
+                    <span style = {{paddingLeft: '15px', fontSize: '0.75em'}}>{getTimeHHMMSS(message.createdAt)}</span>
                 </div>
             </List.Item>
         )
     })
 
-    return dialog
-        ? <div className={'dialog'}> <List style={{position: 'relative' }} itemLayout='vertical' > { messagesList } </List> </div>
-        : <Empty></Empty>
+    return !dialog
+        ? <Empty />
+        : <div className={'dialog'}> 
+            <List style={{position: 'relative' }} itemLayout='vertical' > 
+                { messagesList } 
+            </List> 
+        </div>
 }
 
 

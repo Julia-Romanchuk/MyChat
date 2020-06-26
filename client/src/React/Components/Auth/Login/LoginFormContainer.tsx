@@ -6,7 +6,17 @@ import { isAuthSelector, loginResultCode, loginResultMessage } from '../../../Se
 import { Redirect } from 'react-router'
 import { onLogin } from '../../../../Redux/Redusers/authReducer'
 import Alert from 'antd/es/alert'
-import { LoginFormContainerPropsType, MapStateType, MapDispatchType } from '../../../Types/login/login.type'
+import { LoginFormData } from '../../../../Redux/Types/authReduser.type'
+
+export type MapStateType = {
+    isAuth: boolean
+    loginResultCode: number | null
+    loginResultMessage: string | null
+}
+export type MapDispatchType = {
+    onLogin: (formData: LoginFormData) => void
+}
+export type LoginFormContainerPropsType = MapDispatchType & MapStateType
 
 const LoginFormContainer: FC<LoginFormContainerPropsType> = (props) => {
 

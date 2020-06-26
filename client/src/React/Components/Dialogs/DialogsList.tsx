@@ -1,16 +1,20 @@
 import React, { FC, useEffect } from 'react'
 import { AppStateType } from '../../../Redux'
+import { withRouter, RouteComponentProps } from 'react-router'
+import { connect } from 'react-redux'
+import { Menu, Avatar } from 'antd'
+
+import { getDialogs } from '../../../Redux/Redusers/dialogsReducer'
+
 import { DialogListItem } from '../../../Redux/Types/dilaogsReducer.type'
 import { dialogsSelector } from '../../Selectors/dialogsSelector'
-import { getDialogs } from '../../../Redux/Redusers/dialogsReducer'
-import { connect } from 'react-redux'
-import { Menu, Avatar, Badge } from 'antd'
-import defaultAvatar from '../../../images/defaultAvatar.png'
-import { withRouter, RouteComponentProps } from 'react-router'
 import { ownerIdSelector } from '../../Selectors/profileSeectors'
 
+import defaultAvatar from '../../../images/defaultAvatar.png'
+
+
 type MapStateType = {
-    dialogs: Array<DialogListItem>
+    dialogs: Array<DialogListItem> | null
     ownerId: string
 }
 type MapDispatchProps = {
@@ -21,9 +25,11 @@ type DialogContainerType = MapDispatchProps & MapStateType & RouteComponentProps
 
 const DialogsList: FC<DialogContainerType> = ({dialogs, getDialogs, history, ownerId}) => {
 
-    useEffect(() => {getDialogs()}, [])
+    useEffect(() => {getDialogs()}, [getDialogs])
 
-    const onDialogItemClick = (dialogId: string) => { history.push(`/dialog/${dialogId}`) }
+    const onDialogItemClick = (dialogId: string) => {
+        history.push(`/dialog/${dialogId}`) 
+    }
 
     return dialogs
     ? <Menu
@@ -31,19 +37,15 @@ const DialogsList: FC<DialogContainerType> = ({dialogs, getDialogs, history, own
         theme='light'
         >
         {dialogs.map((dialogItem) => {
+            const collocutor = dialogItem.authors.filter(author => author._id !== ownerId)[0]
             return (
                 <Menu.Item 
-                    key={dialogItem.authors.filter(author => author._id !== ownerId)[0]._id} 
-                    icon={
-                            <Avatar 
-                                size='large' 
-                                src={dialogItem.authors.filter(author => author._id !== ownerId)[0].image || defaultAvatar} 
-                            />
-                        }
+                    key={collocutor._id} 
+                    icon={ <Avatar size='large' src={collocutor.image || defaultAvatar} /> }
                     onClick={() => onDialogItemClick(dialogItem._id)}
                 >
                     <span>
-                        {dialogItem.authors.filter(author => author._id !== ownerId)[0].firstname}
+                        {collocutor.firstname}
                     </span>
                 </Menu.Item>
                 )
@@ -55,7 +57,7 @@ const DialogsList: FC<DialogContainerType> = ({dialogs, getDialogs, history, own
 
 const mapStateToProps = (state: AppStateType): MapStateType => ({
     dialogs: dialogsSelector(state),
-    ownerId: ownerIdSelector(state)
+    ownerId: ownerIdSelector(state),
 })
 
 export default withRouter(connect<MapStateType, MapDispatchProps, {}, AppStateType>(mapStateToProps, { getDialogs })(DialogsList))

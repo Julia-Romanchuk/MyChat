@@ -1,18 +1,16 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useState, ChangeEvent } from 'react'
 import {Button, Avatar, Row, Col, Typography, Spin } from 'antd'
 import defaultAvatar from '../../../images/defaultAvatar.png'
 import ProfileInfoBox from './ProfileParts/ProfileInfoBox'
 import EditProfileInfoBox from './ProfileParts/ProfileEditMode'
 import BestFriendsBox from './ProfileParts/BestFriendsBox'
 import { ProfileType, UserItem } from '../../../Redux/Types/profileReduser.type'
-import { ResultType } from '../../../Redux/Types/authReduser.type'
 
 type TProfile = {
     profile: ProfileType | null
     isOwner: boolean
-    friendOperationResult: ResultType
     updateProfile: (profile: ProfileType) => void
-    onAvatarUpload: any
+    onAvatarUpload: (e: ChangeEvent<HTMLInputElement>) => void
     addFriend: (userId: string) => void
     removeFriend: (userId: string) => void
     isFollowed: null | boolean

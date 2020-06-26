@@ -29,7 +29,7 @@ const profileAPI: ProfileAPI = {
     //},
     async uploadAvatar (avatar) {
         const Bearer = 'Bearer ' + localStorage.getItem('token')
-      let formData = new FormData;
+      let formData = new FormData();
         formData.append('image', avatar)
         const response: AxiosResponse<ServerResponse<{avatarURL: string}>> = 
         await axios.put('http://localhost:3000/profile/uploadAvatar',

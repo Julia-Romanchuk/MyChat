@@ -11,7 +11,7 @@ import ResultMessage from '../../../common/Alert'
 
 type mapStateType = {
     registResultCode:  number | null
-    registResultMessage: string
+    registResultMessage: string | null
 }
 type mapDispatchType = {
     onRegistSubmit: (formData: RegistFormData) => void
@@ -25,7 +25,8 @@ const RegistrationFormContainer: FC<RegistrationFormContainer> = (props) => {
     return registResultCode
     ? 
     <>
-        <ResultMessage message={registResultMessage} resultCode={registResultCode} />
+        {registResultCode && registResultMessage &&
+        <> {ResultMessage({message: registResultMessage, resultCode: registResultCode})} </>}
         <Redirect to='login' />
     </>
     : <RegistrationForm onRegistSubmit={onRegistSubmit} />

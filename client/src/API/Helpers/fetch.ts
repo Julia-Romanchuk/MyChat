@@ -1,14 +1,10 @@
 import { RequestConstructor } from "../api.type"
 
-export const request: RequestConstructor = async (url, method?, payload?, additionalHeaders?) => {
+export const request: RequestConstructor = async (url, method, payload?, additionalHeaders?) => {
     const response = 
-    method 
-    ? await fetch (/*process.env.BASE_URL'http://localhost:3001' +*/ url, {
+    await fetch (/*process.env.BASE_URL'http://localhost:3001' +*/ url, {
         method, 
         body: JSON.stringify(payload),
-        headers: { 'Content-Type': 'application/json', ...additionalHeaders}
-    })
-    : await fetch(url, {
         headers: { 'Content-Type': 'application/json', ...additionalHeaders}
     })
     return await response.json()

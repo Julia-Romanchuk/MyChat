@@ -1,32 +1,39 @@
 import React, { FC } from  'react'
-import { ProfileType } from '../../../../Redux/Types/profileReduser.type'
+import { ProfileType, Contacts } from '../../../../Redux/Types/profileReduser.type'
 import locationIcon from '../../../../images/location.png'
 import { Descriptions, PageHeader, Typography } from 'antd'
+
+const { Item } = Descriptions
+const { Paragraph } = Typography
 
 type ProfileInfoBoxType = {
     profile: ProfileType
 }
-
+ 
 const ProfileInfoBox: FC<ProfileInfoBoxType> = ({profile}) => {
-    return (
+
+  const {firstname, lastname, username, status, address, contacts} = profile
+  
+  return (
     <div>
       <PageHeader 
-        title={`${profile.firstname} ${profile.lastname}`}
-        subTitle={profile.username} 
+        title={`${firstname} ${lastname}`}
+        subTitle={username} 
       />
-      <Typography.Paragraph >{profile.status ? profile.status : 'Set status'}</Typography.Paragraph>
-      <Typography.Paragraph >
-        <img alt={`${profile.username}'s avatar`} style={ {width: "1em", height: "1em"} } src={locationIcon} />
-        {profile.address ? `${profile.address.country}, ${profile.address.city}` : 'Ukraine, Kiev'}
-      </Typography.Paragraph>
+      <Paragraph> {status ? status : 'Set status'} </Paragraph>
+      <Paragraph>
+        <img alt={`${username}'s avatar`} style={ {width: "1em", height: "1em"} } src={locationIcon} />
+        {address ? `${address.country}, ${address.city}` : 'Ukraine, Kiev'}
+      </Paragraph>
       <Descriptions>
-          {Object.keys(profile.contacts).map(contactItem => 
-          //@ts-ignore
-                <Descriptions.Item key={Object.keys(contactItem)} label={contactItem}>{profile.contacts[contactItem] as string}</Descriptions.Item>
-            )}  
-        </Descriptions>
+        {Object.keys(contacts).map((contactItem) => {
+            return <Item key={contactItem} label={contactItem}> 
+               {contacts[contactItem as keyof Contacts]}
+            </Item>}
+          )}  
+      </Descriptions>
     </div>
-    )
+  )
 }
 
 export default ProfileInfoBox

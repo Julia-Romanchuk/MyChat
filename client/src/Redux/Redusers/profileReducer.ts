@@ -1,27 +1,22 @@
-import { InitialStateType, ProfileType, UserItem } from "../Types/profileReduser.type";
-import { Reducer, Dispatch } from "react";
+import { ProfileType, UserItem } from "../Types/profileReduser.type";
 import { ServerResponse } from "../../API/api.type"
 import profileAPI from '../../API/profileAPI'
+import { ThunkBase, Reducer } from "../Types/common.type";
 
-type CombinedActions = 
-    ReturnType<typeof setProfile> | 
-    ReturnType<typeof setAvatar> | 
-    ReturnType<typeof isFollowed> |
-    ReturnType<typeof setFriendsList>
-
-
-const initialState: InitialStateType = {
-    profile: null as ProfileType | null,
+const initialState: InitialState = {
+    profile: null,
     isFollowed: false,
     friendsList: null
 }
 
-const profileReduser: Reducer<InitialStateType, CombinedActions> = (state = initialState, action) => {
+const profileReduser = (state = initialState, action: CombinedActions): InitialState => {
     switch (action.type) {
         case "SET_PROFILE":
             return {...state, profile: action.profile}
         case 'SET_AVATAR':
+            if (state.profile)
             return {...state, profile: {...state.profile, image: action.avatarURL}}
+            return {...state}
         case 'IS_FOLLOWED': 
             return {...state, isFollowed: action.isFollowed}
         case 'SET_FRIENDS_LIST': 
@@ -36,7 +31,7 @@ export const setAvatar = (avatarURL: string) => ({type: 'SET_AVATAR', avatarURL}
 export const setFriendsList = (friendsList: Array<UserItem>) => ({type: 'SET_FRIENDS_LIST', friendsList} as const)
 export const isFollowed = (isFollowed: boolean) => ({type: 'IS_FOLLOWED', isFollowed} as const)
 
-export const loadProfile = (id: string) => async (dispatch: Dispatch<CombinedActions>) => {
+export const loadProfile = (id: string): Thunk => async (dispatch) => {
     const response = await profileAPI.getProfile(id)
     if (response.status) {
         dispatch(setProfile(response.data.profile))
@@ -46,7 +41,7 @@ export const loadProfile = (id: string) => async (dispatch: Dispatch<CombinedAct
     }
 }
 
-export const updateProfile = (profile: ProfileType) => async (dispatch: Dispatch<CombinedActions>) => {
+export const updateProfile = (profile: ProfileType): Thunk => async (dispatch) => {
     const response = await profileAPI.updateProfile(profile)
     if (response.status) {
         dispatch(setProfile(response.data.profile))
@@ -55,7 +50,7 @@ export const updateProfile = (profile: ProfileType) => async (dispatch: Dispatch
     }
 }
 
-export const uploadAvatar = (avatar: string) => async (dispatch: Dispatch<CombinedActions>) => {
+export const uploadAvatar = (avatar: string): Thunk => async (dispatch) => {
     const response = await profileAPI.uploadAvatar(avatar)
     if (response.status) {
         dispatch(setAvatar(response.data.avatarURL))
@@ -64,23 +59,24 @@ export const uploadAvatar = (avatar: string) => async (dispatch: Dispatch<Combin
     }
 }
 
-export const switchFriendStatus = (operation: 'add' | 'remove', userId: string) => async (dispatch: Dispatch<CombinedActions>) => {
-    let response: ServerResponse<{isFollowed: boolean}>
-    switch (operation) {
-        case 'add': 
-            response = await profileAPI.addFriend(userId)
-            break
-        case 'remove': 
-            response = await profileAPI.removeFriend(userId)
-    }
-    if (response.status) {
-        dispatch(isFollowed(response.data.isFollowed))
-    } else {
-        console.log('Friend List error')
+export const switchFriendStatus = (operation: 'add' | 'remove', userId: string): Thunk => 
+    async (dispatch) => {
+        let response: ServerResponse<{isFollowed: boolean}>
+        switch (operation) {
+            case 'add': 
+                response = await profileAPI.addFriend(userId)
+                break
+            case 'remove': 
+                response = await profileAPI.removeFriend(userId)
+        }
+        if (response.status) {
+            dispatch(isFollowed(response.data.isFollowed))
+        } else {
+            console.log('Friend List error')
     }
 }
 
-export const getFriends = (userId: string) => async (dispatch: Dispatch<CombinedActions>) => {
+export const getFriends = (userId: string): Thunk => async (dispatch) => {
     const response = await profileAPI.getFriends(userId)
     if (response.status) {
         dispatch(setFriendsList(response.data.friendsList))
@@ -89,5 +85,18 @@ export const getFriends = (userId: string) => async (dispatch: Dispatch<Combined
     }
 }
 
-
 export default profileReduser
+
+type CombinedActions = 
+    ReturnType<typeof setProfile> | 
+    ReturnType<typeof setAvatar> | 
+    ReturnType<typeof isFollowed> |
+    ReturnType<typeof setFriendsList>
+
+type InitialState = {
+    profile: ProfileType | null,
+    isFollowed: boolean,
+    friendsList: null | Array<UserItem>
+}
+
+type Thunk = ThunkBase<CombinedActions>

@@ -5,7 +5,7 @@ export const lendth = (max: number, min: number) => (value: string | undefined) 
 } 
 
 export const isEmail = (value: string,) => {
-  return (value && value.match(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/)) ? true : false
+  return (value && value.match(/^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/)) ? true : false
 }
 export const isEmpty = (value: string) => {
   return !value ? true : false

@@ -28,7 +28,7 @@ const App: FC<AppProps> = ({ authMe, isAuth }) => {
 
   useEffect(() => {
     authMe()  
-  }, [isAuth])
+  }, [isAuth, authMe])
 
   return (
     <Preloader>

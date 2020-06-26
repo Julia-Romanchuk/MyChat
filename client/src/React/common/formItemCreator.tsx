@@ -13,7 +13,7 @@ type InputsFormCreatorType = {
     hasFeedback?: Array<string> | 'all'
     required?: Array<string> | 'all'
 }
-//@ts-ignore
+
 const InputsFormCreaator: FC<InputsFormCreatorType> = ({ inputs, hasFeedback, required }) => { 
 
     const ItemsList = inputs.map((inputItem) => {
@@ -61,7 +61,7 @@ const InputsFormCreaator: FC<InputsFormCreatorType> = ({ inputs, hasFeedback, re
         </Form.Item>
         )})
 
-    return ItemsList
+    return <> {ItemsList} </>
 }
 
 export default InputsFormCreaator

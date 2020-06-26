@@ -2,20 +2,27 @@ import React, { FC } from 'react'
 import { LoginFormData } from '../../../../Redux/Types/authReduser.type'
 import { Form, Button, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { LoginFormPropsType } from '../../../Types/login/login.type'
 import InputsFormCreaator from '../../../common/formItemCreator'
+import { Store } from 'antd/es/form/interface'
+import { useForm } from 'antd/lib/form/util'
 
+export type LoginFormPropsType = {
+  onLogin: (formData: LoginFormData) => void
+}
 
 const LoginForm: FC<LoginFormPropsType> = ({ onLogin }) => {
 
-    const onFinish = (formData: LoginFormData) => {
-        onLogin(formData)
-    }
+  const [form] = useForm()
+
+  // ATTENTION!!!
+  const onFinish = (values: Store) => {
+    onLogin(values as LoginFormData)
+  }
 
     return <Form
         className="login-form"
-        //@ts-ignore
-        onFinish = {onFinish}
+        form={form}
+        onFinish={onFinish}
         >
 
       <InputsFormCreaator 
@@ -23,12 +30,19 @@ const LoginForm: FC<LoginFormPropsType> = ({ onLogin }) => {
         {
           name: 'username', 
           formItemProps: {children: true},
-          inputItemProps: {prefix: <UserOutlined className="site-form-item-icon"/>, placeholder: "Username"} 
+          inputItemProps: {
+            prefix: <UserOutlined className="site-form-item-icon"/>, 
+            placeholder: "Username"
+          } 
         },
         {
           name: 'password',
           formItemProps: {children: true },
-          inputItemProps: { prefix: <LockOutlined className="site-form-item-icon" />, type: "password", placeholder: "Password"}
+          inputItemProps: { 
+            prefix: <LockOutlined className="site-form-item-icon" />, 
+            type: "password", 
+            placeholder: "Password"
+          }
         }
         ]}
         required='all'

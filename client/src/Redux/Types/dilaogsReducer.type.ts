@@ -13,12 +13,13 @@ export type DialogListItem = {
     _id: string
 }
 
-export type InitialStateType = {
-    dialogs: null | Array<DialogListItem>
-    dialog: Dialog ,
-}
-
 export type Dialog = {
     messages: Array<MessageItem> 
     authors: Array<UserItem>
+}
+
+export type SendMessagePayload = {
+    text: string
+    userId: string 
+    dialogId?: string
 }

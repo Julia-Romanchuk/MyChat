@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { Modal, Row, Spin } from 'antd'
-import { ListItem } from '../ProfileParts/BestFriendsBox'
+import ListItem from '../../../common/ListItem'
 import { UserItem } from '../../../../Redux/Types/profileReduser.type'
 
 type FriendsModalType = {

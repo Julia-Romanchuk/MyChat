@@ -1,10 +1,10 @@
 import React, { FC, useState, ChangeEvent, useEffect } from 'react'
 import { Layout, Input } from 'antd';
-import { ProfileType, UserItem } from '../../../Redux/Types/profileReduser.type'
+import { ProfileType } from '../../../Redux/Types/profileReduser.type'
 import { connect } from 'react-redux'
 import { AppStateType } from '../../../Redux';
 import { profileSelector } from '../../Selectors/profileSeectors';
-import { withRouter } from 'react-router';
+import { withRouter, RouteComponentProps } from 'react-router';
 import DialogsList from '../Dialogs/DialogsList';
 import { getDialogs } from '../../../Redux/Redusers/dialogsReducer';
 import { dialogsSelector } from '../../Selectors/dialogsSelector';
@@ -13,31 +13,34 @@ import { getUsers } from '../../../Redux/Redusers/usersReducer'
 import SearchUsersList from '../UsersList/SearchUsersList';
 import { wsConnect } from '../../../Redux/WebSocketMiddleware/wsMiddleware'
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content, Sider } = Layout
 
-type FriendsListType = {
-    friends: Array<UserItem>
+type MapStateProps = {
+  profile: ProfileType | null
+  dialogs: Array<DialogListItem> | null
 }
+
+type MapDiaspatchProps = {
+  getDialogs: () => void
+  getUsers: (usernameParam: string) => void
+  wsConnect: () => void
+}
+
 type PathParamsType = {
     userId: string
 }
 
-const LayoutComponent: FC<any> = ({children, history, getUsers, wsConnect}) => {
+type LayoutComponentT = MapStateProps & MapDiaspatchProps & RouteComponentProps<PathParamsType>
+
+const LayoutComponent: FC<LayoutComponentT> = ({children, getUsers, wsConnect}) => {
     
-  const [collapse, setCollapse] = useState(false)
   const [searchValue, setSearchValue] = useState('')
 
-  useEffect(() => {
-      wsConnect()
-  }, [])
+  useEffect(() => { wsConnect() }, [wsConnect])
 
   const onSearchUsersChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value)
     getUsers(e.target.value)
-  }
-  
-  const onCollapse = () => {
-    setCollapse(!collapse)
   }
  
   return (
@@ -46,17 +49,7 @@ const LayoutComponent: FC<any> = ({children, history, getUsers, wsConnect}) => {
       <Header className="site-layout-background" style={{ padding: 0 }}> </Header>
 
       <Layout className="site-layout" >
-        <Sider 
-        style={{borderRight: '1px solid lightgrey', margin: '5px' }}
-          //collapsible 
-          //collapsed={collapse} 
-          //breakpoint="lg"
-          //collapsedWidth="0"
-          //onCollapse={onCollapse}
-          //style={{height: '100%'}}
-          
-          >
-            
+        <Sider style={{borderRight: '1px solid lightgrey', margin: '5px' }}>     
           <Input 
             placeholder='Search' 
             value={searchValue}
@@ -69,7 +62,7 @@ const LayoutComponent: FC<any> = ({children, history, getUsers, wsConnect}) => {
         </Sider>
 
         <Content style={{ margin: '0 16px', maxHeight: '765px'}}>
-          {children }
+          { children }
         </Content>
       </Layout>
     </Layout>
@@ -78,18 +71,9 @@ const LayoutComponent: FC<any> = ({children, history, getUsers, wsConnect}) => {
   }
 
   const mapStateToProps = (state: AppStateType) => ({
-      profile: profileSelector(state),
-      dialogs: dialogsSelector(state)
+    profile: profileSelector(state),
+    dialogs: dialogsSelector(state)
   })
-  type MapStateProps = {
-    profile: ProfileType
-    dialogs: Array<DialogListItem>
-  }
-  type MapDiaspatchProps = {
-    getDialogs: () => void
-    getUsers: (usernameParam: string) => void
-    wsConnect: () => void
-  }
 
   const WithRouterSider = withRouter(LayoutComponent) 
   export default connect<MapStateProps, MapDiaspatchProps, {}, AppStateType>

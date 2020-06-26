@@ -1,18 +1,22 @@
 import React, { FC, useEffect, useState, ChangeEvent } from 'react'
-import DialogE from './Dialog'
 import { RouteComponentProps } from 'react-router'
-import { AppStateType } from '../../../Redux'
-import { Dialog } from '../../../Redux/Types/dilaogsReducer.type'
-import { dialogSelector } from '../../Selectors/dialogsSelector'
-import { getDialogs, getDialog, sendMessage } from '../../../Redux/Redusers/dialogsReducer'
 import { connect } from 'react-redux'
-import { ownerIdSelector, profileSelector } from '../../Selectors/profileSeectors'
-import { ProfileType } from '../../../Redux/Types/profileReduser.type'
 
+import { AppStateType } from '../../../Redux'
+import { getDialogs, getDialog, sendMessage } from '../../../Redux/Redusers/dialogsReducer'
+
+import { dialogSelector, collocutorIdSelector, collocutor } from '../../Selectors/dialogsSelector'
+import { ownerIdSelector } from '../../Selectors/profileSeectors'
+
+import { UserItem } from '../../../Redux/Types/profileReduser.type'
+import { Dialog } from '../../../Redux/Types/dilaogsReducer.type'
+
+import DialogE from './Dialog'
 type MapStateType = {
     dialog: Dialog | null
     ownerId: string
-    profile: ProfileType
+    collocutorId: string
+    collocutor: UserItem | null
 }
 type MapDispatchProps = {
     getDialogs: () => void
@@ -28,7 +32,8 @@ type DialogContainerType = MapDispatchProps & MapStateType & RouteComponentProps
 
 const DialogContainer: FC<DialogContainerType> = (props) => {
 
-    const {dialog, match, history, ownerId, profile, getDialog, sendMessage, } = props
+    const {dialog, match, history, ownerId, collocutorId, collocutor,
+        getDialog, sendMessage} = props
 
     const dialogId = match.params.dialogId
 
@@ -39,17 +44,17 @@ const DialogContainer: FC<DialogContainerType> = (props) => {
     }
 
     useEffect(() => {
-        if (dialogId) getDialog(dialogId)
-    }, [dialogId])
+        dialogId &&
+        getDialog(dialogId)
+    }, [dialogId, getDialog])
 
     const onMessageSend = (text: string) => {
-        const userId = dialog ? dialog.authors.filter(author => author._id !== ownerId)[0]._id : profile._id
-        dialog || profile._id
+        dialogId
         // send message to corresponding dialod
-        ? sendMessage(text, userId, dialogId) 
+        ? sendMessage(text, collocutorId, dialogId)
         // send request with userId, if dialog with this user doesnt exist
         //in order to create a new dialog and add message in 
-        : sendMessage(text, userId) 
+        : sendMessage(text, collocutorId) 
         setMessageText('')
     }
 
@@ -57,20 +62,24 @@ const DialogContainer: FC<DialogContainerType> = (props) => {
         history.push(`/profile/${userId}`)
     }
 
-    return <DialogE 
-        ownerId={ownerId}
-        dialog={dialog}
-        isDialogExist={dialogId ? true : false}
-        onMessageSend={onMessageSend}
-        redirectToProfile={redirectToProfile}
-        messageText={messageText}
-        onMessageChange={onMessageChange} />
+    return (
+        <DialogE 
+            ownerId={ownerId}
+            dialog={dialog}
+            isDialogExist={dialogId ? true : false}
+            onMessageSend={onMessageSend}
+            redirectToProfile={redirectToProfile}
+            messageText={messageText}
+            onMessageChange={onMessageChange}
+            collocutor={collocutor} />
+    )
 }
 
 const mapStateToProps = (state: AppStateType): MapStateType => ({
     dialog: dialogSelector(state),
     ownerId: ownerIdSelector(state),
-    profile: profileSelector(state)
+    collocutorId: collocutorIdSelector(state),
+    collocutor: collocutor(state)
 })
 
 export default connect<MapStateType, MapDispatchProps, {}, AppStateType>(

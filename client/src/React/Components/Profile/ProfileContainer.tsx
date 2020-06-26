@@ -1,20 +1,26 @@
 import React, { FC, useEffect } from 'react'
-import Profile from './Profile'
 import { RouteComponentProps } from 'react-router'
-import { AppStateType } from '../../../Redux'
-import { profileSelector, ownerIdSelector, friendOperationResultSelector, isFollowedSelector, friendsListSelector } from '../../Selectors/profileSeectors'
-import { loadProfile, updateProfile, uploadAvatar, switchFriendStatus, getFriends } from '../../../Redux/Redusers/profileReducer'
-import { ProfileType, UserItem } from '../../../Redux/Types/profileReduser.type'
-import { isAuthSelector } from '../../Selectors/loginSelectors'
 import { connect } from 'react-redux'
-import LoginFormContainer from '../Auth/Login/LoginFormContainer'
-import { ResultType } from '../../../Redux/Types/authReduser.type'
 
-type MapStateProps = {
+import { setCollocutorId } from '../../../Redux/Redusers/dialogsReducer'
+import { loadProfile, updateProfile, uploadAvatar, 
+         switchFriendStatus, getFriends } from '../../../Redux/Redusers/profileReducer'
+
+import { isAuthSelector } from '../../Selectors/loginSelectors'
+import { profileSelector, ownerIdSelector, 
+        isFollowedSelector, friendsListSelector } from '../../Selectors/profileSeectors'
+
+import { ProfileType, UserItem } from '../../../Redux/Types/profileReduser.type'
+import { AppStateType } from '../../../Redux'
+
+import LoginFormContainer from '../Auth/Login/LoginFormContainer'
+import Profile from './Profile'
+
+
+type MapStateProps = { 
     profile: ProfileType | null
     isAuth: boolean
     ownerId: string
-    friendOperationResult: ResultType
     isFollowed: null | boolean
     friendsList: Array<UserItem> | null
 
@@ -25,6 +31,7 @@ type MapDispatchProps = {
     uploadAvatar: (avatar: string) => void
     switchFriendStatus: (operation: 'add' | 'remove', userId: string) => void
     getFriends: (userId: string) => void
+    setCollocutorId: (collocutorId: string) => void
 }
 type PathParamsType = {
     userId: string
@@ -34,17 +41,17 @@ type ProfileContainerType = MapDispatchProps & MapStateProps & RouteComponentPro
 
 const ProfileContainer: FC<ProfileContainerType> = (props) => {
 
-    const {ownerId, profile, match, history, isAuth, friendOperationResult, isFollowed,
-        updateProfile, uploadAvatar, loadProfile, switchFriendStatus, friendsList, getFriends } = props
+    const {ownerId, profile, match, history, isAuth, isFollowed, friendsList,
+        updateProfile, uploadAvatar, loadProfile, switchFriendStatus, setCollocutorId, getFriends } = props
 
-    // true either url doesn't contain id or if id in url equal to ownerId 
+    // true either url doesn't contain id or id in the url is ownerId 
     const isOwner = !match.params.userId || match.params.userId === ownerId
 
     useEffect(() => {
         const userId = match.params.userId
         if (userId) loadProfile(userId)
         else if (ownerId) loadProfile(ownerId)
-    }, [match.params.userId])
+    }, [match.params.userId, loadProfile, ownerId])
 
     const onAvatarUpload = (e: React.BaseSyntheticEvent) => {
         if(e.target.files.length)
@@ -60,6 +67,7 @@ const ProfileContainer: FC<ProfileContainerType> = (props) => {
     }
 
     const onSendMessageClick = (dialogId?: string) => {
+        profile && setCollocutorId(profile._id)
         history.push(`/dialog/${dialogId || ''}`)
     }
 
@@ -68,7 +76,6 @@ const ProfileContainer: FC<ProfileContainerType> = (props) => {
         : <Profile 
             profile={profile}
             isOwner={isOwner}
-            friendOperationResult={friendOperationResult}
             isFollowed={isFollowed}
             updateProfile={updateProfile}
             onAvatarUpload={onAvatarUpload}
@@ -77,19 +84,18 @@ const ProfileContainer: FC<ProfileContainerType> = (props) => {
             friendsList={friendsList}
             getFriendsList={getFriends}
             onSendMessageClick={onSendMessageClick}
-             />
+         />
 }
 
 const mapStateToProps = (state: AppStateType) => ({
     profile: profileSelector(state),
     isAuth: isAuthSelector(state),
     ownerId: ownerIdSelector(state),
-    friendOperationResult: friendOperationResultSelector(state),
     isFollowed: isFollowedSelector(state),
     friendsList: friendsListSelector(state)
 })
 
 export default connect<MapStateProps, MapDispatchProps, {}, AppStateType>(
     mapStateToProps, 
-    { loadProfile, updateProfile, uploadAvatar, switchFriendStatus, getFriends }
+    { loadProfile, updateProfile, uploadAvatar, switchFriendStatus, getFriends, setCollocutorId }
     )(ProfileContainer)
